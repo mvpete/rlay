@@ -24,6 +24,7 @@ export class RlayHttpClient {
     this.protocol = useHttps ? https : http
     this.socket = this.connect(relayHost, relayPort, password);
     this.socket.on("request received", this.processRequest.bind(this));
+    this.socket.on("connect complete", this.connectComplete.bind(this));
     this.socket.on(
       "incorrect password",
       this.handleIncorrectPassword.bind(this)
@@ -58,6 +59,10 @@ export class RlayHttpClient {
       console.log(`Disconnected. Reason: ${reason}. Attempting reconnection`);
     });
     return socket;
+  }
+
+  private connectComplete(clientId: string) {
+    console.log(`Forwarding: ${this.config.relayHost.replace("http://", `http://${clientId}.`)}:${this.config.relayPort} -> ${this.config.https ? "https": "http"}://${this.config.localHost}:${this.config.localPort}`);
   }
 
   private processRequest(request: HttpRequest) {

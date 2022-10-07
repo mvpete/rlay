@@ -5,4 +5,5 @@ export interface HttpRequest {
   body: string;
   bodySize: number;
   id: string;
+  sockId: string;
 }
