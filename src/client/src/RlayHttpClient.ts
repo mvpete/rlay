@@ -62,7 +62,8 @@ export class RlayHttpClient {
   }
 
   private connectComplete(clientId: string) {
-    console.log(`Forwarding: ${this.config.relayHost.replace("http://", `http://${clientId}.`)}:${this.config.relayPort} -> ${this.config.https ? "https": "http"}://${this.config.localHost}:${this.config.localPort}`);
+    console.log(`Client id: ${clientId}`);
+    console.log(`Forwarding: ${this.config.relayHost.replace("https://", `https://${clientId}.`)}:${this.config.relayPort} -> ${this.config.https ? "https": "http"}://${this.config.localHost}:${this.config.localPort}`);
   }
 
   private processRequest(request: HttpRequest) {
