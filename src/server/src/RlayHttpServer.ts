@@ -134,13 +134,22 @@ export class RlayHttpServer {
   private handleNewConnection(newSocket: Socket) {
     this.logger.info(`Client connection request`);
     if (newSocket.handshake.auth.password !== this.config.password) {
-      this.logger.error(`Password does not match. Rejecting connection`);
+      this.logger.error(`Password does not match. Rejecting connection.`);
       newSocket.emit("incorrect password");
       newSocket.disconnect(true);
       return;
     }
+    
 
-    const sockId = uuidv4();
+    const sockId = newSocket.handshake.auth.alias ?? uuidv4();
+
+    if(this.sockets.has(sockId)) {
+      this.logger.error(`Alias is already in use.`);
+      newSocket.emit("alias in use");
+      newSocket.disconnect(true);
+      return;
+    }
+
     this.sockets.set(sockId, newSocket);
     const socket = newSocket;
 
@@ -151,6 +160,7 @@ export class RlayHttpServer {
     });
     socket.on("error", (err: any) => {
       this.logger.error(`Socket error: ${err}`);
+      this.sockets.delete(sockId);
     })
 
     socket.emit("connect complete", sockId);

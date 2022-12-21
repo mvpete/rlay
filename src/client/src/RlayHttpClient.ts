@@ -14,7 +14,7 @@ export class RlayHttpClient {
   private protocol: Protocol;
 
   constructor(private config: Configuration) {
-    const { relayHost, relayPort, password } = config;
+    const { relayHost, relayPort, password, alias } = config;
     const useHttps = config.https
     if (config.https) {
       console.log(`You chose HTTPS, to help with local development we will ignore invalid certificates. ` +
@@ -22,17 +22,26 @@ export class RlayHttpClient {
       process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = "0";
     }
     this.protocol = useHttps ? https : http
-    this.socket = this.connect(relayHost, relayPort, password);
+    this.socket = this.connect(relayHost, relayPort, password, alias);
     this.socket.on("request received", this.processRequest.bind(this));
     this.socket.on("connect complete", this.connectComplete.bind(this));
     this.socket.on(
       "incorrect password",
       this.handleIncorrectPassword.bind(this)
     );
+    this.socket.on(
+      "alias in use",
+      this.handleAliasInUse.bind(this)
+    );
   }
 
   private handleIncorrectPassword() {
     console.error("Incorrect password");
+    this.socket.disconnect();
+  }
+
+  private handleAliasInUse() {
+    console.error("Alias in use");
     this.socket.disconnect();
   }
 
@@ -46,11 +55,12 @@ export class RlayHttpClient {
   private connect(
     relayHost: string,
     relayPort: number,
-    password: string
+    password: string,
+    alias ?: string,
   ): Socket {
 
     const url = this.processUrl(relayHost, relayPort);
-    const socket = io(url, { auth: { password } });
+    const socket = io(url, { auth: { password, alias } });
     console.log(`Connecting HTTP to ${url}`);
     socket.on("connect", () => {
       console.log(`Connected HTTP to ${url}`);

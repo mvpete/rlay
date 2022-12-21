@@ -3,7 +3,8 @@ export interface Configuration {
   relayPort: number
   localHost: string
   relayHost: string
-  password: string
+  password: string,
+  alias ?:string, 
   type: "tcp" | "http"
   https: boolean
   outputBody: boolean

@@ -51,7 +51,7 @@ From there on, when the remote service makes http calls, they will be forwarded 
 -P, --relay-port string   Port on relay server. Default is 443
 -H, --relay-host string   Host of relay server
 -p, --port string         Local port.
--H, --https               Connect https instead of http.
+-s, --https               Connect https instead of http.
 -o, --output              Output body in console for debug purposes.
 -h, --host string         Host of local server. Default is localhost
 --password string         Rlay password

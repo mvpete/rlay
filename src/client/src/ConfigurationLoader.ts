@@ -31,7 +31,7 @@ export class ConfigurationLoader {
       },
       {
         name: "https",
-        alias: "H",
+        alias: "s",
         type: Boolean,
         description: "Connect https instead of http.",
         optional: true,
@@ -49,10 +49,11 @@ export class ConfigurationLoader {
         type: String,
         description: "Host of local server. Default is localhost",
       },
-      { name: "password", type: String, description: "Rlay password" },
-      { name: "version", alias: "v", type: Boolean, description: "Display rlay version and quit" },
-      { name: "tcp", alias: "t", type: Boolean, description: "Use TCP instead of HTTP" },
-      { name: "help", type: Boolean, description: "Display command-line help" },
+      { name: "password", type: String, description: "Rlay password." },
+      { name: "alias", alias: "a", type: String, description: "Hosting sub-domain alias." },
+      { name: "version", alias: "v", type: Boolean, description: "Display rlay version and quit." },
+      { name: "tcp", alias: "t", type: Boolean, description: "Use TCP instead of HTTP." },
+      { name: "help", type: Boolean, description: "Display command-line help." },
     ];
 
     let version = "[package.json file is missing]"
@@ -112,7 +113,8 @@ export class ConfigurationLoader {
     const relayPort = getCommandValue("relay-port") || (tcp ? 444 : 443);
     const localHost = getCommandValue("host") || "localhost";
     const relayHost = getCommandValue("relay-host") || process.env.RLAY_HOST;
-    const password = getCommandValue("password") || process.env.RLAY_PASSWORD;
+    const password  = getCommandValue("password") || process.env.RLAY_PASSWORD;
+    const alias     = getCommandValue("alias") || undefined;
     const https = !!commands["https"]
     const output = !!commands["output"]
 
@@ -141,6 +143,7 @@ export class ConfigurationLoader {
       relayPort:
         typeof relayPort === "number" ? relayPort : Number.parseInt(relayPort),
       password: password as string,
+      alias,
       type: tcp ? "tcp" : "http",
       https,
       outputBody: output,
